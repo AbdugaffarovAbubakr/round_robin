@@ -217,6 +217,120 @@
         font-size: 14px;
       }
     }
+    
+    /* Footer Styles */
+    .footer {
+      background: linear-gradient(135deg, #2c3e50, #34495e);
+      color: white;
+      margin-top: 40px;
+      padding: 30px 20px 20px;
+      text-align: center;
+    }
+    
+    .footer-content {
+      max-width: 800px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 20px;
+    }
+    
+    .footer-info h3 {
+      margin: 0 0 10px 0;
+      color: #ecf0f1;
+      font-size: 1.2rem;
+    }
+    
+    .footer-info p {
+      margin: 5px 0;
+      color: #bdc3c7;
+      font-size: 14px;
+    }
+    
+    .footer-info strong {
+      color: #3498db;
+    }
+    
+    .footer-social {
+      display: flex;
+      align-items: center;
+    }
+    
+    .telegram-link {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: #0088cc;
+      color: white;
+      padding: 12px 20px;
+      border-radius: 25px;
+      text-decoration: none;
+      font-weight: 500;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(0, 136, 204, 0.3);
+    }
+    
+    .telegram-link:hover {
+      background: #006699;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(0, 136, 204, 0.4);
+    }
+    
+    .telegram-icon {
+      width: 20px;
+      height: 20px;
+      fill: currentColor;
+    }
+    
+    .footer-bottom {
+      margin-top: 20px;
+      padding-top: 15px;
+      border-top: 1px solid #34495e;
+    }
+    
+    .footer-bottom p {
+      margin: 0;
+      color: #95a5a6;
+      font-size: 12px;
+    }
+    
+    /* Mobile Footer Styles */
+    @media (max-width: 768px) {
+      .footer {
+        padding: 20px 15px 15px;
+        margin-top: 30px;
+      }
+      
+      .footer-content {
+        flex-direction: column;
+        text-align: center;
+        gap: 15px;
+      }
+      
+      .footer-info h3 {
+        font-size: 1.1rem;
+      }
+      
+      .footer-info p {
+        font-size: 13px;
+      }
+      
+      .telegram-link {
+        padding: 10px 16px;
+        font-size: 14px;
+      }
+      
+      .telegram-icon {
+        width: 18px;
+        height: 18px;
+      }
+      
+      .footer-bottom p {
+        font-size: 11px;
+      }
+    }
   </style>
 </head>
 <body>
@@ -253,6 +367,29 @@
 
     <div id="averages"></div>
   </div>
+  
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-content">
+      <div class="footer-info">
+        <h3>Round Robin CPU Scheduler</h3>
+        <p>Yaratuvchi: <strong>Abdugaffarov Abubakr</strong></p>
+        <p>Yaratilgan: <strong>2024-yil</strong></p>
+        <p>Operatsion Tizimlar kursi uchun ishlab chiqilgan</p>
+      </div>
+      <div class="footer-social">
+        <a href="https://t.me/AbdugaffarovAbubakr" target="_blank" class="telegram-link">
+          <svg class="telegram-icon" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.568 8.16l-1.61 7.59c-.12.54-.44.67-.89.42l-2.46-1.81-1.19 1.15c-.13.13-.24.24-.49.24l.18-2.56 4.57-4.13c.2-.18-.04-.28-.31-.1l-5.64 3.55-2.43-.76c-.53-.16-.54-.53.11-.79l9.57-3.69c.44-.16.83.1.69.79z"/>
+          </svg>
+          Telegram
+        </a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>&copy; 2024 Abdugaffarov Abubakr. Barcha huquqlar himoyalangan.</p>
+    </div>
+  </footer>
 
   <script>
     let processes = [];
