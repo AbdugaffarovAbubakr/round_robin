@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Round Robin Scheduler (Create by Abdugaffarov Abubakr)</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #f2f6fc;
+      margin: 0;
+      padding: 20px;
+    }
+    h1 {
+      text-align: center;
+      color: #333;
+    }
+    .container {
+      max-width: 800px;
+      margin: auto;
+      background: #fff;
+      padding: 25px;
+      border-radius: 12px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+    .form-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 15px;
+    }
+    input {
+      padding: 8px;
+      font-size: 16px;
+      width: 100%;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+    }
+    button {
+      padding: 10px 18px;
+      border: none;
+      font-size: 16px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: 0.3s ease;
+    }
+    #addBtn {
+      background: #28a745;
+      color: white;
+    }
+    #addBtn:hover {
+      background: #218838;
+    }
+    #runBtn {
+      display: block;
+      margin: 20px auto;
+      padding: 14px 28px;
+      font-size: 18px;
+      font-weight: bold;
+      border: none;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #1d8cf8, #3358f4);
+      color: white;
+      cursor: pointer;
+      box-shadow: 0 6px 20px rgba(50, 50, 93, 0.3), 0 8px 20px rgba(0, 0, 0, 0.2);
+      transition: all 0.3s ease;
+    }
+    #runBtn:hover {
+      background: linear-gradient(135deg, #3358f4, #1d8cf8);
+      transform: scale(1.05);
+    }
+    #runBtn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      background: linear-gradient(135deg, #aaa, #ccc);
+    }
+    table {
+      width: 100%;
+      margin-top: 20px;
+      border-collapse: collapse;
+    }
+    th, td {
+      border: 1px solid #ddd;
+      padding: 10px;
+      text-align: center;
+    }
+    th {
+      background: #f0f0f0;
+    }
+    #averages {
+      margin-top: 15px;
+      font-weight: bold;
+      text-align: center;
+    }
+    .process-list {
+      margin-top: 20px;
+    }
+    .process-item {
+      background: #f9f9f9;
+      padding: 10px;
+      border-radius: 6px;
+      margin-bottom: 6px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .process-item span {
+      font-weight: 500;
+    }
+    .edit-btn, .delete-btn {
+      padding: 5px 10px;
+      margin-left: 5px;
+      font-size: 14px;
+      border: none;
+      border-radius: 5px;
+      color: white;
+      cursor: pointer;
+    }
+    .edit-btn {
+      background-color: #ffc107;
+    }
+    .delete-btn {
+      background-color: #dc3545;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Round Robin CPU Scheduling (Create by Abdugaffarov Abubakr)</h1>
+    
+    <div class="form-row">
+      <input type="number" id="arrivalInput" placeholder="Arrival Time">
+      <input type="number" id="burstInput" placeholder="Burst Time">
+      <button id="addBtn" onclick="addProcess()">+ Add Process</button>
+    </div>
+
+    <div class="form-row">
+      <input type="number" id="quantumInput" placeholder="Time Quantum (e.g. 2)">
+    </div>
+
+    <div class="process-list" id="processList"></div>
+
+    <button id="runBtn" onclick="runScheduler()">▶️ Run Round Robin</button>
+
+    <table id="resultTable" style="display:none;">
+      <thead>
+        <tr>
+          <th>Process</th>
+          <th>Arrival Time</th>
+          <th>Burst Time</th>
+          <th>Finish Time</th>
+          <th>Turnaround Time</th>
+          <th>Waiting Time</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+
+    <div id="averages"></div>
+  </div>
+
+  <script>
+    let processes = [];
+    let processCount = 1;
+
+    function addProcess() {
+      const arrival = parseInt(document.getElementById("arrivalInput").value);
+      const burst = parseInt(document.getElementById("burstInput").value);
+
+      if (isNaN(arrival) || isNaN(burst) || arrival < 0 || burst <= 0) {
+        alert("To‘g‘ri arrival va burst vaqtlarini kiriting.");
+        return;
+      }
+
+      const name = `P${processCount++}`;
+      processes.push({ name, arrivalTime: arrival, burstTime: burst });
+
+      document.getElementById("arrivalInput").value = "";
+      document.getElementById("burstInput").value = "";
+
+      displayProcessList();
+    }
+
+    function displayProcessList() {
+      const container = document.getElementById("processList");
+      container.innerHTML = "";
+      processes.forEach((p, i) => {
+        container.innerHTML += `
+          <div class="process-item">
+            <span>${p.name} — Arrival: ${p.arrivalTime}, Burst: ${p.burstTime}</span>
+            <div>
+              <button class="edit-btn" onclick="editProcess(${i})">Edit</button>
+              <button class="delete-btn" onclick="deleteProcess(${i})">Delete</button>
+            </div>
+          </div>
+        `;
+      });
+    }
+
+    function editProcess(index) {
+      const newArrival = prompt("Yangi Arrival Time:", processes[index].arrivalTime);
+      const newBurst = prompt("Yangi Burst Time:", processes[index].burstTime);
+
+      if (newArrival !== null && newBurst !== null && !isNaN(newArrival) && !isNaN(newBurst)) {
+        processes[index].arrivalTime = parseInt(newArrival);
+        processes[index].burstTime = parseInt(newBurst);
+        displayProcessList();
+      }
+    }
+
+    function deleteProcess(index) {
+      processes.splice(index, 1);
+      displayProcessList();
+    }
+
+    function runScheduler() {
+      const runBtn = document.getElementById("runBtn");
+      runBtn.disabled = true;
+      runBtn.innerText = "⏳ Running...";
+
+      setTimeout(() => {
+        const quantum = parseInt(document.getElementById("quantumInput").value);
+        if (isNaN(quantum) || quantum <= 0) {
+          alert("Quantum vaqtini to‘g‘ri kiriting.");
+          runBtn.disabled = false;
+          runBtn.innerText = "▶️ Run Round Robin";
+          return;
+        }
+
+        const n = processes.length;
+        if (n === 0) {
+          alert("Kamida bitta process qo‘shing.");
+          runBtn.disabled = false;
+          runBtn.innerText = "▶️ Run Round Robin";
+          return;
+        }
+
+        const queue = [];
+        let time = 0, completed = 0;
+
+        const results = processes.map(p => ({
+          name: p.name,
+          arrivalTime: p.arrivalTime,
+          burstTime: p.burstTime,
+          remainingTime: p.burstTime,
+          finishTime: 0,
+          turnaroundTime: 0,
+          waitingTime: 0,
+          added: false
+        }));
+
+        function addToQueue(t) {
+          results.forEach(p => {
+            if (p.arrivalTime <= t && !p.added && p.remainingTime > 0) {
+              queue.push(p);
+              p.added = true;
+            }
+          });
+        }
+
+        addToQueue(time);
+
+        while (completed < n) {
+          if (queue.length === 0) {
+            time++;
+            addToQueue(time);
+            continue;
+          }
+
+          const current = queue.shift();
+          const execTime = Math.min(quantum, current.remainingTime);
+          time += execTime;
+          current.remainingTime -= execTime;
+
+          addToQueue(time);
+
+          if (current.remainingTime > 0) {
+            queue.push(current);
+          } else {
+            current.finishTime = time;
+            current.turnaroundTime = current.finishTime - current.arrivalTime;
+            current.waitingTime = current.turnaroundTime - current.burstTime;
+            completed++;
+          }
+        }
+
+        const tbody = document.querySelector("#resultTable tbody");
+        document.getElementById("resultTable").style.display = "table";
+        tbody.innerHTML = "";
+
+        let totalTAT = 0, totalWT = 0;
+
+        results.forEach(p => {
+          totalTAT += p.turnaroundTime;
+          totalWT += p.waitingTime;
+          tbody.innerHTML += `
+            <tr>
+              <td>${p.name}</td>
+              <td>${p.arrivalTime}</td>
+              <td>${p.burstTime}</td>
+              <td>${p.finishTime}</td>
+              <td>${p.turnaroundTime}</td>
+              <td>${p.waitingTime}</td>
+            </tr>
+          `;
+        });
+
+        const avgTAT = (totalTAT / n).toFixed(1);
+        const avgWT = (totalWT / n).toFixed(1);
+
+        document.getElementById("averages").innerHTML = `
+          <strong>Average Turnaround Time:</strong> ${avgTAT} &nbsp; | &nbsp;
+          <strong>Average Waiting Time:</strong> ${avgWT}
+        `;
+
+        runBtn.disabled = false;
+        runBtn.innerText = "▶️ Run Round Robin";
+      }, 400);
+    }
+  </script>
+</body>
+</html>
